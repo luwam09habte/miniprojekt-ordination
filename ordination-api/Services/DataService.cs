@@ -130,6 +130,42 @@ public class DataService
         return db.Laegemiddler.ToList();
     }
 
+    // FRA CHAT IKKE UNDERSØGT
+    
+    private Patient FindPatient(int patientId)
+    {
+        return db.Patienter.FirstOrDefault(p => p.PatientId == patientId)
+               ?? throw new KeyNotFoundException(
+                   $"Patient med id {patientId} blev ikke fundet.");
+    }
+
+    private Laegemiddel FindLaegemiddel(int laegemiddelId)
+    {
+        return db.Laegemiddler.FirstOrDefault(l => l.LaegemiddelId == laegemiddelId)
+               ?? throw new KeyNotFoundException(
+                   $"Lægemiddel med id {laegemiddelId} blev ikke fundet.");
+    }
+
+    private static void ValidateOrdinationPeriode(DateTime startDato, DateTime slutDato)
+    {
+        if (startDato.Date >= slutDato.Date)
+        {
+            throw new ArgumentException(
+                "Slutdato skal være efter startdato.",
+                nameof(slutDato));
+        }
+    }
+
+    private void GemOrdination(Patient patient, Ordination ordination)
+    {
+        patient.ordinationer.Add(ordination);
+        db.Ordinationer.Add(ordination);
+        db.SaveChanges();
+    }
+    
+    // Slutter her
+    
+    
     public PN OpretPN(int patientId, int laegemiddelId, double antal, DateTime startDato, DateTime slutDato)
     // Færdiggjort opret PN Metode
     {
