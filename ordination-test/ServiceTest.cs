@@ -53,4 +53,15 @@ public class ServiceTest
 
         Console.WriteLine("Her kommer der ikke en exception. Testen fejler.");
     }
+
+    [TestMethod]
+    public void OpretDagligSkæv()
+    {
+    }
+
+    [TestMethod]
+    public void OpretPN()
+    {
+    }
+    
 }
