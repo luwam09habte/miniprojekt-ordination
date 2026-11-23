@@ -1,3 +1,6 @@
+using System.Data;
+using Microsoft.VisualBasic;
+
 namespace shared.Model;
 
 public class PN : Ordination {
@@ -17,13 +20,31 @@ public class PN : Ordination {
     /// Returner false ellers og datoen givesDen ignoreres
     /// </summary>
     public bool givDosis(Dato givesDen) {
-        // TODO: Implement!
-        return false;
+	    // Tilføjet mulighed for at vælge start og slut dato for pn
+        ArgumentNullException.ThrowIfNull(givesDen);
+
+        DateTime dato = givesDen.dato.Date;
+
+        if (dato < startDen.Date || dato >= slutDen.Date)
+        {
+	        return false;
+        }
+        dates.Add(new Dato{ dato = dato});
+        return true;
     }
 
     public override double doegnDosis() {
-    	// TODO: Implement!
-        return -1;
+	    //finder gennemsnittet af døgndosis for pn per dag  - formel: antalgivninger*enheder/dage fra start til slut
+	    if (dates.Count == 0)
+	    {
+		    return 0;
+	    }
+
+	    DateTime førsteDato = dates.Min(d => d.dato.Date);
+	    DateTime sidsteDato = dates.Max(d => d.dato.Date);
+	    int antalDage = (sidsteDato - førsteDato).Days + 1;
+
+	    return samletDosis() / antalDage;
     }
 
 

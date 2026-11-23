@@ -23,9 +23,10 @@ public class DagligFast : Ordination {
 		return base.antalDage() * doegnDosis();
 	}
 
-	public override double doegnDosis() {
-		// TODO: Implement!
-        return -1;
+	public override double doegnDosis()
+	// tilføjet metode til at finde summen af patientens døgndosis (dagligfast)
+	{
+		return getDoser().Sum(dosis => dosis.antal);
 	}
 	
 	public Dosis[] getDoser() {

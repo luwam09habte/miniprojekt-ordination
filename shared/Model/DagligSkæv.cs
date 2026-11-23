@@ -21,9 +21,10 @@ public class DagligSkæv : Ordination {
 		return base.antalDage() * doegnDosis();
 	}
 
-	public override double doegnDosis() {
-		// TODO: Implement!
-        return -1;
+	public override double doegnDosis()
+		// tilføjet metode til at finde summen af patientens døgndosis (dagligskæv)
+	{
+		return doser.Sum(dosis => dosis.antal);
 	}
 
 	public override String getType() {
