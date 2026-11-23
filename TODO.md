@@ -14,9 +14,9 @@ En lille kanban-plan for gruppen. Brug filen som fælles tjekliste; flyt opgaver
 - [x] GitHub-repository oprettet; seneste commit på `main` er synkroniseret med `origin/main`.
 - [x] `ordination-test`-projektet med MSTest findes allerede.
 - [x] SQLite-projektets lokale database er migreret; databasefilen ligger under `bin` og deles ikke via Git.
-- [ ] Løsningen mangler stadig model- og servicefunktioner. MSTest-projektet har desuden to demonstrations-tests, der forventes at fejle, indtil de erstattes.
+- [ ] Løsningen mangler stadig model- og servicefunktioner. MSTest-projektet har to demonstrations-tests, der skal erstattes/afklares, samt tomme `OpretDagligSkæv`- og `OpretPN`-tests.
 - [ ] Ingen testresultater er bekræftet endnu.
-- [ ] Ved planarbejdet viste `git status` lokale ændringer: slettede `OrdinationTest`-filer og ændret `ordination.sln`. Gennemgå dem før næste commit; de er ikke medtaget i planen eller ændret her. `TODO.md` er også ny og endnu ikke committed/pushet.
+- [ ] Ved planarbejdet viste `git status` lokale ændringer: slettede filer fra det gamle `OrdinationTest`-projekt, en `ordination.sln`-ændring der fjerner det projekt, samt nye tomme tests i `ordination-test/ServiceTest.cs`. Gennemgå dem før næste kode-commit; de er ikke ændret her. Planen selv er committed/pushet som `TODO.md`.
 
 ## Næste — start her
 
