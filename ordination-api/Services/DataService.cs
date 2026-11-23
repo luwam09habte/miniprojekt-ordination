@@ -130,39 +130,113 @@ public class DataService
         return db.Laegemiddler.ToList();
     }
 
-    public PN OpretPN(int patientId, int laegemiddelId, double antal, DateTime startDato, DateTime slutDato) {
-        // TODO: Implement!
-        return null!;
+    public PN OpretPN(int patientId, int laegemiddelId, double antal, DateTime startDato, DateTime slutDato)
+    // Færdiggjort opret PN Metode
+    {
+        ValidateOrdinationPeriode(startDato, slutDato);
+
+        Patient patient = FindPatient(patientId);
+        Laegemiddel laegemiddel = FindLaegemiddel(laegemiddelId);
+
+        var ordination = new PN(startDato, slutDato, antal, laegemiddel);
+        GemOrdination(patient, ordination);
+
+        return ordination;
     }
 
     public DagligFast OpretDagligFast(int patientId, int laegemiddelId, 
         double antalMorgen, double antalMiddag, double antalAften, double antalNat, 
         DateTime startDato, DateTime slutDato) {
+        //Færdiggjort opret dagligfast metode
 
-        // TODO: Implement!
-        return null!;
+        ValidateOrdinationPeriode(startDato, slutDato);
+
+        Patient patient = FindPatient(patientId);
+        Laegemiddel laegemiddel = FindLaegemiddel(laegemiddelId);
+
+        var ordination = new DagligFast(
+            startDato,
+            slutDato,
+            laegemiddel,
+            antalMorgen,
+            antalMiddag,
+            antalAften,
+            antalNat);
+
+        GemOrdination(patient, ordination);
+
+        return ordination;
     }
 
     public DagligSkæv OpretDagligSkaev(int patientId, int laegemiddelId, Dosis[] doser, DateTime startDato, DateTime slutDato) {
-        // TODO: Implement!
-        return null!;
+        //Færdiggjort opret dagligskæv metode
+        
+        ArgumentNullException.ThrowIfNull(doser);
+        ValidateOrdinationPeriode(startDato, slutDato);
+
+        Patient patient = FindPatient(patientId);
+        Laegemiddel laegemiddel = FindLaegemiddel(laegemiddelId);
+
+        var ordination = new DagligSkæv(
+            startDato,
+            slutDato,
+            laegemiddel,
+            doser);
+
+        GemOrdination(patient, ordination);
+
+        return ordination;
     }
 
     public string AnvendOrdination(int id, Dato dato) {
-        // TODO: Implement!
-        return null!;
-    }
+        //færdiggjort metode for opret ordination
+        
+        ArgumentNullException.ThrowIfNull(dato);
+        
+        PN ordination = db.PNs
+            .Include(pn => pn.dates)
+            .FirstOrDefault(pn => pn.OrdinationId == id)
+            ?? throw new KeyNotFoundException(
+                $"PN-ordination med id{id} blev ikke fundet");
 
-    /// <summary>
-    /// Den anbefalede dosis for den pågældende patient, per døgn, hvor der skal tages hensyn til
-	/// patientens vægt. Enheden afhænger af lægemidlet. Patient og lægemiddel må ikke være null.
-    /// </summary>
-    /// <param name="patient"></param>
-    /// <param name="laegemiddel"></param>
-    /// <returns></returns>
-	public double GetAnbefaletDosisPerDøgn(int patientId, int laegemiddelId) {
-        // TODO: Implement!
-        return -1;
-	}
+        if (!ordination.givDosis(dato))
+        {
+            return "Datoen ligger uden for ordinationens gyldighedsperiode.";
+        }
+
+        db.SaveChanges();
+        return "Dosis er registreret.";
+    }
+    
+	public double GetAnbefaletDosisPerDøgn(int patientId, int laegemiddelId)
+    //færdiggjort beregner for anbefalet dosis per døgn
+    {
+        Patient patient = FindPatient(patientId);
+        Laegemiddel laegemiddel = FindLaegemiddel(laegemiddelId);
+
+        double faktor;
+
+        if (patient.vaegt < 25)
+        {
+            faktor = laegemiddel.enhedPrKgPrDoegnLet;
+        }
+        else if (patient.vaegt > 120)
+        {
+            faktor = laegemiddel.enhedPrKgPrDoegnTung;
+        }
+        else
+        {
+            faktor = laegemiddel.enhedPrKgPrDoegnNormal;
+        }
+
+        return patient.vaegt * faktor;
+    }
     
 }
+/// <summary>
+/// Den anbefalede dosis for den pågældende patient, per døgn, hvor der skal tages hensyn til
+/// patientens vægt. Enheden afhænger af lægemidlet. Patient og lægemiddel må ikke være null.
+/// </summary>
+/// <param name="patient"></param>
+/// <param name="laegemiddel"></param>
+/// <returns></returns>
